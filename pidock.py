@@ -24,14 +24,18 @@ _default_dev='/dev/mmcblk0'
 _default_host='raspberrypi'
 _default_passwd='raspberry'
 _default_img='raspbian.img'
+_default_entrypoint='bash'
 
+# Map each command to its specific script in the 'support' folder
 scripts = {
     'extract': 'support/1-extract.sh',
     'build': 'support/2-build.sh',
     'compose': 'support/3-compose.sh',
     'flash': 'support/4-flash.sh',
+    'run': 'support/5-run.sh',
 }
 
+# Run a support script as a subprocess and wait for it to complete
 def run_script(script, args=[]):
     command = ['/bin/bash', scripts[script]] + args
 
@@ -63,6 +67,7 @@ def main(args):
     host = args.host if args.host else _default_host
     passwd = args.passwd if args.passwd else _default_passwd
     img = args.img if args.img else _default_img
+    entrypoint = args.entrypoint if args.entrypoint else _default_entrypoint
 
     all_actions = [
         ('extract', lambda: run_script('extract', [img])),
@@ -70,11 +75,14 @@ def main(args):
         ('compose', lambda: run_script('compose', [host])),
         ('flash', lambda: run_script('flash', [device])),
     ]
+    # 'Run' is outside the build & flash process; keep it separate
+    test_run = ('run', lambda: run_script('run', [entrypoint]))
 
     actions = None
     if args.action == 'all':
         actions = all_actions
     else:
+        all_actions.append(test_run)
         actions = [a for a in all_actions if a[0] == args.action]
 
     for action in actions:
@@ -87,11 +95,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'action',
-        choices=['all', 'extract', 'build', 'compose', 'flash']
+        choices=['all', 'extract', 'build', 'compose', 'flash', 'run']
     )
     parser.add_argument('--host', type=str)
     parser.add_argument('--dev', type=str)
     parser.add_argument('--passwd', type=str)
     parser.add_argument('--img', type=str)
+    parser.add_argument('--entrypoint', type=str)
     args = parser.parse_args()
     main(args)

@@ -19,9 +19,11 @@
 function do_umount() {
     RETURNCODE=$?
     if grep -qs '/mnt' /proc/mounts; then
+        echo "Unmounting '/mnt'"
         sudo umount /mnt
     fi
     if [ -n "${LODEV}" ]; then
+        echo "Detaching loop device ${LODEV}"
         sudo losetup -d "${LODEV}"
     fi
     return $RETURNCODE

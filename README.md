@@ -39,6 +39,7 @@ Move desired raspbian base disk image to file `raspbian.img`
     [--passwd <password=raspberry>]
     [--dev <flash_device=/dev/mmcblk0>]
     [--img <base_image=raspbian.img>]
+    [--entrypoint <run_entrypoint=bash>]
 ```
 Where action is one of the following
 
@@ -46,7 +47,8 @@ Where action is one of the following
 `extract` - Extracts files from raspbian.img to run in docker\
 `build` - Builds docker image from extracted files and custom additions\
 `compose` - Creates custom.img from built docker image\
-`flash` - Flashes custom.img onto memory device (default: /dev/mmcblk0)
+`flash` - Flashes custom.img onto memory device (default: /dev/mmcblk0)\
+`run` - Runs the custom Docker image after the 'build' step (Default entrypoint: 'bash')
 
 Use Dockerfile to build the pi's root as if it were a docker image.  Example
 simply changes pi's password to that specified by --passwd instead of the
