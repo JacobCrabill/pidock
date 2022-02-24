@@ -17,10 +17,23 @@ set up with binfmt_misc to run qemu for arm binaries
 
 On ubuntu 20: `apt install qemu-user-static`
 
+### Ubuntu 19.x?
+
 This package doesn't install binfmt_misc properly prior to ubuntu 20.  Run
 `./binfmt_setup.sh` if you're running an older version of ubuntu or debian.
  Other distributions might require other packages or steps.
 
+### Ubuntu 18.04 Fix:
+```bash
+sudo apt-get install qemu-user-static
+
+git clone https://github.com/computermouth/qemu-static-conf.git
+sudo mkdir -p /lib/binfmt.d
+sudo cp qemu-static-conf/*.conf /lib/binfmt.d/
+sudo systemctl restart systemd-binfmt.service
+```
+
+### Last Resort
 Another easy (but insecure) method to do this is to run the following command
 
 `docker run --rm --privileged multiarch/qemu-user-static --reset -p yes`
